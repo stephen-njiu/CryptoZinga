@@ -1,0 +1,66 @@
+
+
+def evaluate_trades(df):
+    df['trade_result'] = 0
+    df['trade_duration'] = 0
+    in_trade = False
+    trade_start = 0
+    stop_loss = 0
+    take_profit = 0
+    trade_type = ''
+
+    for i in range(len(df)):
+        if not in_trade:
+            if df['valid_cross'].iloc[i] == 1:  # Long trade signal
+                in_trade = True
+                trade_start = i
+                stop_loss = df['LowerStopLoss'].iloc[i]
+                take_profit = df['UpperTakeProfit'].iloc[i]
+                trade_type = 'long'
+            elif df['valid_cross'].iloc[i] == 2:  # Short trade signal
+                in_trade = True
+                trade_start = i
+                stop_loss = df['UpperStopLoss'].iloc[i]
+                take_profit = df['LowerTakeProfit'].iloc[i]
+                trade_type = 'short'
+        
+        if in_trade:
+            if trade_type == 'long':
+                if df['Low'].iloc[i] <= stop_loss:
+                    df.loc[df.index[trade_start], 'trade_result'] = 0  # Stop loss hit
+                    df.loc[df.index[trade_start], 'trade_duration'] = i - trade_start
+                    in_trade = False
+                elif df['High'].iloc[i] >= take_profit:
+                    df.loc[df.index[trade_start], 'trade_result'] = 1  # Take profit hit
+                    df.loc[df.index[trade_start], 'trade_duration'] = i - trade_start
+                    in_trade = False
+            elif trade_type == 'short':
+                if df['High'].iloc[i] >= stop_loss:
+                    df.loc[df.index[trade_start], 'trade_result'] = 0  # Stop loss hit
+                    df.loc[df.index[trade_start], 'trade_duration'] = i - trade_start
+                    in_trade = False
+                elif df['Low'].iloc[i] <= take_profit:
+                    df.loc[df.index[trade_start], 'trade_result'] = 2  # Take profit hit
+                    df.loc[df.index[trade_start], 'trade_duration'] = i - trade_start
+                    in_trade = False
+
+    return df
+
+# Assuming df is your dataframe with all the previous calculations
+df = evaluate_trades(df)
+
+# Display summary of trade results
+print("Long trades won:", (df['trade_result'] == 1).sum())
+print("Short trades won:", (df['trade_result'] == 2).sum())
+print("Trades lost:", (df['trade_result'] == 0).sum())
+
+# Calculate win rate
+total_trades = (df['valid_cross'] == 1).sum() + (df['valid_cross'] == 2).sum()
+winning_trades = (df['trade_result'] == 1).sum() + (df['trade_result'] == 2).sum()
+win_rate = winning_trades / total_trades if total_trades > 0 else 0
+
+print(f"Win rate: {win_rate:.2%}")
+
+# Average trade duration
+avg_duration = df[df['trade_duration'] > 0]['trade_duration'].mean()
+print(f"Average trade duration: {avg_duration:.2f} candles")
