@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Results</title>
+</head>
+<body>
+    <div class="results-container">
+        <h1>Classification Report</h1>
+        <table id="report-table">
+            <!-- Classification report will be rendered by JavaScript -->
+        </table>
+        
+        <h2>Class Distribution Pie Chart</h2>
+        <canvas id="pieChart"></canvas>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+    <script>
+        const report = JSON.parse('{{ report | tojson }}');
+        const pieData = {{ pie_data | tojson }};
+        renderReport(report);
+        renderPieChart(pieData);
+    </script>
+</body>
+</html>
