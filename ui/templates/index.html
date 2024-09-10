@@ -1,34 +1,4 @@
-<!--
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CryptoZinga</title>
-    <link rel="stylesheet" href="static/styles.css" />
-  </head>
-  <body>
-    <h1>Welcome to CryptoZinga</h1>
-    <p>Upload a file with historical data to forecast cryptocurrency status.</p>
 
-    <!-- Centered File Upload Prompt with a Border 
-    <div class="file-upload-container">
-      <input type="file" id="cryptoFile" accept=".csv" />
-      <button onclick="forecast()">Upload and Forecast</button>
-    </div>
-
-    <p id="result"></p>
-
-    <!-- Button to Navigate to the Next Page 
-    <button
-      class="bottom-button"
-      onclick="window.location.href='templates/results.html'"
-    >
-      Next Page
-    </button>
-  </body>
-</html>
--->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -36,31 +6,58 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CryptoZinga</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}"
-    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    
+    <!-- Add some styles for the spinner -->
+    <style>
+      .spinner {
+        display: none; /* Hidden by default */
+        border: 4px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 4px solid #3498db;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      .loading-text {
+        text-align: center;
+        display: none;
+      }
+    </style>
   </head>
   <body>
     <h1>Welcome to CryptoZinga</h1>
-    <p>Upload a file with historical data to forecast cryptocurrency status.</p>
+    <p>Upload a file with historical stock market data to forecast its Future!.</p>
 
-    <!-- Centered File Upload Form with a Border -->
-    <div class="file-upload-container">
+    <!-- File Upload Form -->
+    <div class="file-upload-container" style="color: white;">
       <form
         action="{{ url_for('index') }}"
         method="post"
         enctype="multipart/form-data"
-      >
-        <input
-          type="file"
-          id="cryptoFile"
-          name="file"
-          accept=".csv,.xlsx"
-          required
-        />
+        onsubmit="showSpinner()"> <!-- This triggers the spinner -->
+      
+        <input type="file" id="cryptoFile" name="file" accept=".csv,.xlsx" required />
         <button type="submit">Upload and Forecast</button>
       </form>
     </div>
+
+    <!-- Spinner and Loading Text -->
+    <div class="spinner" id="loadingSpinner"></div>
+    <p class="loading-text" id="loadingText">Processing... Please wait.</p>
+
+    <script>
+      function showSpinner() {
+        document.getElementById('loadingSpinner').style.display = 'block';
+        document.getElementById('loadingText').style.display = 'block';
+      }
+    </script>
   </body>
 </html>

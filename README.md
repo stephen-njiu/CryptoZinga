@@ -16,19 +16,21 @@ CryptoZinga uses feature extraction and extracts features that are only produced
 ## What is the next Step
 1.  The next step is to build lower stop loss, upper stop loss, lower take profit, and upper take profit for each candle!
 2. For the crossovers that occur while meeting our defined crossover conditions, we check whether the market hits the stop loss or take profit first and return the corresponding value.
-  * Returns 1 if we went long and the market hit the upper take profit
-  * Returns 2 if we went short and the market hit the lower take profit
-  * Returns 3 if both crossover conditions were well defined but stop losses were hit! (We return 3 instead of returning to 0)
+    * Returns 1 if we went long and the market hit the upper take profit
+    * Returns 2 if we went short and the market hit the lower take profit
+    * Returns 3 if both crossover conditions were well defined but stop losses were hit! (We return 3 instead of returning to 0)
 
 ## Next step
 - We are setting these feature extraction after checking whether the take profits were hit to reduce processing power in the<i> long iteration process </i>
 * We add other technical indicators to aid the `rfClassifier` in making decisions.
-  * 1. The bollinger band width
-  * 2. The ROC of the 3rd, and 9th candles. (2 columns)
-  * 3. The adx with a period of 14 (lookback period)
-  * 4. whether the candle body size is a momentum candle or not (Returns a boolean of int type).
-  * 5. The body size of each candle
+
+1. The bollinger band width
+2. ADX - Average directional Index to show the strength of the trend!
+3. The adx with a period of 14 (lookback period)
+4. whether the candle body size is a momentum candle or not (Returns a boolean of int type).
+5. The body size of each candle
   <br>
+
   <i> Save this data into a copy `preserved dataset` to maintain consistency in time series data when new data needs to be appended to the bottom and feature extraction is needed from previous rows </i> <br>
   <br>
 #### `Depending on how model reacts, we can choose to do negative shift of row values into columns to show how price and features transition. Can sometimes result into overfitting`
@@ -37,12 +39,12 @@ CryptoZinga uses feature extraction and extracts features that are only produced
 <i> FIRST, we drop all null rows </i>
 1. Extracts the rows with crossover and their features and targets
 2. divide the data into 75/25
-  * Save the 25 data into another file to serve as external data.
-  * Use the 75 for training and testing purpose (further splitting it into 75/25)
+* Save the 25 data into another file to serve as external data.
+* Use the 75 for training and testing purpose (further splitting it into 75/25)
 3. Use a rf classifier model to predict whether the model results to 1, 2, or 2.
-  * 1 ==> the model predicted going long, and yes our upper tp was hit
-  * 2 ==> the model predicted going short, and yes our lower tp was hit
-  * 3 ==> The model predicted going either long or short and none of our take profits were hit.
+* 1 ==> the model predicted going long, and yes our upper tp was hit
+* 2 ==> the model predicted going short, and yes our lower tp was hit
+* 3 ==> The model predicted going either long or short and none of our take profits were hit.
 
 4. Determine the accuracy of the model! Then load the external dataset and determine the accuracy.
 

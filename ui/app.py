@@ -1,20 +1,15 @@
-import pandas as pd
-import numpy as np 
-import ta 
-import matplotlib.pyplot as plt
-from sklearn.ensemble import RandomForestClassifier 
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-from ml_cross import base_accuracy, model_accuracy, ext_data_accuracy
 
-# Testing all lib / module are correctly imported
-print("All modules / libs imported successfuly")
-
-# initialize the whole app as app
 from flask import Flask, render_template, request, redirect, url_for
 import pandas as pd
+from ml_cross import run_model_on_data, external_data_prediction
 
 app = Flask(__name__)
+
+# Global variable to store the initial results
+initial_results = {
+    'strategy_accuracy': None,
+    'model_accuracy': None
+}
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -23,31 +18,35 @@ def index():
         if file and (file.filename.endswith('.csv') or file.filename.endswith('.xlsx')):
             # Process the file
             df = pd.read_csv(file) if file.filename.endswith('.csv') else pd.read_excel(file)
+            base_accuracy, model_accuracy = run_model_on_data(df)
             
-            # Perform your calculations here
-            # strategy_accuracy = 0.85  # Example value, replace with your actual calculation
-            # model_accuracy = 0.92  # Example value, replace with your actual calculation
-            # external_data_prediction_accuracy = 0.78  # Example value, replace with your actual calculation
+            # Update the global results
+            initial_results['strategy_accuracy'] = base_accuracy
+            initial_results['model_accuracy'] = model_accuracy
             
-            return redirect(url_for('results', 
-                                    strategy_accuracy=base_accuracy,
-                                    model_accuracy=model_accuracy,
-                                    external_data_prediction_accuracy=ext_data_accuracy))
+            return redirect(url_for('results'))
     return render_template('index.html')
 
-@app.route('/results')
+@app.route('/results', methods=['GET', 'POST'])
 def results():
-    strategy_accuracy = request.args.get('strategy_accuracy', 0)
-    model_accuracy = request.args.get('model_accuracy', 0)
-    external_data_prediction_accuracy = request.args.get('external_data_prediction_accuracy', 0)
-    return render_template('results.html', 
-                           strategy_accuracy=strategy_accuracy,
-                           model_accuracy=model_accuracy,
-                           external_data_prediction_accuracy=external_data_prediction_accuracy)
+    global initial_results
+    
+    external_data_accuracy = None
+    
+    if request.method == 'POST':
+        file = request.files['file']
+        if file and (file.filename.endswith('.csv') or file.filename.endswith('.xlsx')):
+            # Process the external file
+            test = pd.read_csv(file) if file.filename.endswith('.csv') else pd.read_excel(file)
+            external_data_accuracy = external_data_prediction(test)
+    
+    return render_template('results.html',
+                           strategy_accuracy=initial_results['strategy_accuracy'],
+                           model_accuracy=initial_results['model_accuracy'],
+                           external_data_prediction_accuracy=external_data_accuracy)
 
 if __name__ == '__main__':
     app.run(debug=True)
-
 
 
 

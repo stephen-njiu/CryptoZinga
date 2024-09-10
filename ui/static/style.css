@@ -10,16 +10,18 @@ body {
     justify-content: center;
     min-height: 100vh;
     text-align: center;
+    background: url('https://img.freepik.com/free-vector/fored-trading-mutual-funds-stock-market-background_1017-38016.jpg?size=626&ext=jpg') no-repeat;
+    background-size: cover; 
 }
 
 h1 {
-    color: #333;
+    color: #fff;
     margin-top: 20px;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 p {
-    color: #555;
+    color: #fff;
     margin-bottom: 15px;
 }
 
@@ -55,4 +57,18 @@ button:hover {
 
 .bottom-button {
     margin-top: 20px;
+}
+
+a {
+    color: whitesmoke;
+    font-weight: bold;
+}
+
+.disclaimer {
+   
+    font-style: italic;
+    color: #888;
+    text-align: center;
+    margin-top: 30px;
+      
 }

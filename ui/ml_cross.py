@@ -19,8 +19,8 @@ risk_reward_ratio = 2.0
 atr_period = 14
 adx_period = 14  # Common period for ADX is 14
 
-df = pd.read_csv('BTCUSD_M15_TRAIN.csv')
-len(df)
+# df = pd.read_csv('BTCUSD_M15_TRAIN.csv')
+# len(df)
 
 
 
@@ -113,68 +113,68 @@ def evaluate_trades_precisely(df):
 
     return df
 
-df = data_cleaning(df)
-df = evaluate_trades_precisely(df)
 
-df.head(20)
 
-df['trade_result'].value_counts()
+def run_model_on_data(df):
+  global model
+  df = data_cleaning(df)
+  df = evaluate_trades_precisely(df)
+# df.head(20)
+# df['trade_result'].value_counts()
+# (df['valid_cross']==1).sum(), (df['valid_cross']==2).sum(), (df['valid_cross']==3).sum()
 
-(df['valid_cross']==1).sum(), (df['valid_cross']==2).sum(), (df['valid_cross']==3).sum()
+  total_concluded_trades = ((df['valid_cross'] == 1) | (df['valid_cross'] == 2)).sum()
+  winning_trades = (df['trade_result'] == 1).sum() + (df['trade_result'] == 2).sum()
+  base_accuracy = round(winning_trades / total_concluded_trades * 100, 2)
+  # print(f"Total trade signal: {total_concluded_trades}")
+  # # print(f"Winning trades: {winning_trades}")
+  # print(f"Accuracy: {base_accuracy * 100}")
 
-total_concluded_trades = ((df['valid_cross'] == 1) | (df['valid_cross'] == 2)).sum()
-winning_trades = (df['trade_result'] == 1).sum() + (df['trade_result'] == 2).sum()
-base_accuracy = winning_trades / total_concluded_trades
-print(f"Total trade signal: {total_concluded_trades}")
-# print(f"Winning trades: {winning_trades}")
-print(f"Accuracy: {base_accuracy * 100}")
+  ## Now using machine learning, how can we improve these results
 
-## Now using machine learning, how can we improve these results
+  ml = df[(df['valid_cross'] == 1) | (df['valid_cross'] == 2)]
 
-ml = df[(df['valid_cross'] == 1) | (df['valid_cross'] == 2)]
+  # print len of ml
+  # print(len(ml))
+  y = ml['trade_result']  # Target variable
+  x = ml.drop(columns=['trade_result'])  # Features: drop the target column
 
-# print len of ml
-print(len(ml))
-y = ml['trade_result']  # Target variable
-x = ml.drop(columns=['trade_result'])  # Features: drop the target column
+  # x
 
-x
+  # x.shape, y.shape
 
-x.shape, y.shape
+  x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=42)
+  # Initialize the RandomForestClassifier
+  model = RandomForestClassifier(n_estimators=1000, random_state=42)
+  # Train the model
+  model.fit(x_train, y_train)
+  # Make predictions
+  y_pred = model.predict(x_test)
+  # Evaluate the model
+  model_accuracy = round(100 *accuracy_score(y_test, y_pred),2)
+  # print(f'Accuracy: {100 * model_accuracy:.2f}')
+  return base_accuracy, model_accuracy
 
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=42)
-# Initialize the RandomForestClassifier
-model = RandomForestClassifier(n_estimators=1000, random_state=42)
-# Train the model
-model.fit(x_train, y_train)
-# Make predictions
-y_pred = model.predict(x_test)
-# Evaluate the model
-model_accuracy = accuracy_score(y_test, y_pred)
-print(f'Accuracy: {100 * model_accuracy:.2f}')
+def external_data_prediction(test):
+  ## Testing on External data
+  # test = pd.read_csv('BTCUSD_M15_TEST.csv')
 
-## Testing on External data
-test = pd.read_csv('BTCUSD_M15_TEST.csv')
+  # test
 
-test
+  # df
 
-df
+  test = data_cleaning(test)
+  test = evaluate_trades_precisely(test)
+  test = test[(test['valid_cross'] == 1) | (test['valid_cross'] == 2)]
+  test_data = test.drop(columns=['trade_result'])
+  
+  new_y = test['trade_result']
 
-test = data_cleaning(test)
-test = evaluate_trades_precisely(test)
-test = test[(test['valid_cross'] == 1) | (test['valid_cross'] == 2)]
-test_data = test.drop(columns=['trade_result'])
-test
-
-test_data
-
-new_y = test['trade_result']
-new_y
-
-new_pred_y = model.predict(test_data)
-new_pred_y
-
-ext_data_accuracy = accuracy_score(new_y, new_pred_y)
-print(f'Accuracy: {ext_data_accuracy:.2f}')
-print(len(new_pred_y))
+  new_pred_y = model.predict(test_data)
+  
+  # print("New data evaluated successfully!")
+  ext_data_accuracy = round(accuracy_score(new_y, new_pred_y) * 100,2)
+  return ext_data_accuracy
+  # print(f'Accuracy: {ext_data_accuracy:.2f}')
+  # print(len(new_pred_y))
 
