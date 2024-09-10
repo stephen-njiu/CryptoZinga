@@ -137,7 +137,9 @@ print(f"Total trade signal: {total_concluded_trades}")
 print(f"Accuracy: {win_rate * 100}")
 
 ## Now using machine learning, how can we improve these results
+
 ml = df[(df['valid_cross'] == 1) | (df['valid_cross'] == 2)]
+
 # print len of ml
 print(len(ml))
 y = ml['trade_result']  # Target variable

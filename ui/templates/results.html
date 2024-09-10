@@ -1,29 +1,67 @@
+<!--
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>Results</title>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CryptoZinga</title>
+    <link rel="stylesheet" href="static/styles.css" />
+  </head>
+  <body>
+    <h1>CryptoZinga</h1>
+    <p>
+      Thank you for visiting. Navigate back to the home page or perform another
+      action.
+    </p>
+
+    <!-- Button to Go Back to the First Page 
+    <button onclick="window.location.href='templates/index.html'">
+      Go Back
+    </button>
+  </body>
+</html>
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CryptoZinga Results</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <h1>CryptoZinga Forecast Results</h1>
     <div class="results-container">
-        <h1>Classification Report</h1>
-        <table id="report-table">
-            <!-- Classification report will be rendered by JavaScript -->
-        </table>
-        
-        <h2>Class Distribution Pie Chart</h2>
-        <canvas id="pieChart"></canvas>
+      <p>Strategy Accuracy: {{ strategy_accuracy }}</p>
+      <p>Model Accuracy: {{ model_accuracy }}</p>
+
+      <!-- Centered File Upload Form with a Border -->
+      <div class="file-upload-container">
+        <form
+          action="{{ url_for('index') }}"
+          method="post"
+          enctype="multipart/form-data"
+        >
+          <input
+            type="file"
+            id="cryptoFile"
+            name="file"
+            accept=".csv,.xlsx"
+            required
+          />
+          <button type="submit">External Data Testing</button>
+        </form>
+      </div>
+
+      <p>
+        External Data Prediction Accuracy: {{ external_data_prediction_accuracy
+        }}
+      </p>
     </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="{{ url_for('static', filename='app.js') }}"></script>
-    <script>
-        const report = JSON.parse('{{ report | tojson }}');
-        const pieData = {{ pie_data | tojson }};
-        renderReport(report);
-        renderPieChart(pieData);
-    </script>
-</body>
+    <a href="{{ url_for('index') }}">Back to Upload</a>
+  </body>
 </html>
