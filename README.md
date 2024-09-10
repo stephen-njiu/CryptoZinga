@@ -1,6 +1,14 @@
 # CryptoZinga Trading System. 
 Cryptozinga showcases how machine learning can improve trade signals from a base technical analysis strategy. 
 CryptoZinga uses feature extraction and extracts features that are only produced when a trading signal is found.
+### Try it Out!
+1. Create a directory of your choice.
+2. Ensure python is installed in your machine and run `python -m venv CryptoZinga` to create a virtual environment. The name CryptoZinga can be any name of your choice.
+3. Activate your virtual Env `CryptoZinga\Scripts\activate`
+4. run `git clone https://github.com/stephen-njiu/CryptoZinga`
+5. Navigate to the cloned directory `cd CryptoZinga` and then to ui folder `cd ui`
+6. Install all the dependencies required `pip install -r requirements.txt`
+7. Run the application `python app.py`
 
 ### Brief Overview
 ## Crossover Reinforcement using ML
@@ -10,8 +18,8 @@ CryptoZinga uses feature extraction and extracts features that are only produced
 * We only trade at the direction of the market
 * We dynamically set the stop loss and take profit using ATR. We do testing between setting the stop loss multiplier to 1 or 1.5.
 * The take profit is hard coded to be 2X the stop loss to give a risk to reward ration of 1:2.
-* 1. When there is a crossover which is above the sma_100, we go long
-* 2. When there is a crossunder which is below the sma_100, we go short <br>
+* 1. When there is a crossover we go long
+* 2. When there is a crossunder we go short <br>
 * <i> The two will serve as our baseline model for forecasting</i>
 ## What is the next Step
 1.  The next step is to build lower stop loss, upper stop loss, lower take profit, and upper take profit for each candle!
@@ -54,3 +62,7 @@ CryptoZinga uses feature extraction and extracts features that are only produced
   - We then check whether any crossover conditions were met. If yes, we take the transformed row and pass it to our rf model to validate the signal!
   <br> <br>
 <i><b> The model only confirms a signal from our base prediction model (based on crossover and trend) whether it is valid or not. If valid, the trade is executed on the next open candle. Hardcoding a risk reward ration of 1:2 allows a 50% accuracy or more to be profitable </b></i>
+
+## <i> References </i>
+* Ta module -> https://technical-analysis-library-in-python.readthedocs.io/en/latest/ta.html
+* Backtesting.py -> https://kernc.github.io/backtesting.py/doc/backtesting/
